@@ -5,7 +5,11 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.Stage;
 
 import static javafx.scene.layout.AnchorPane.setLeftAnchor;
@@ -15,12 +19,19 @@ import static javafx.scene.layout.AnchorPane.setTopAnchor;
  * Created by Aditya Kharosekar on 12/18/2016.
  */
 public class GUI {
+
+    public int[] nums;
+
+    GUI() {
+        nums = new int[] {-1, -1, -1, -1}; //These have to be -1 because in my changeColor function,
+                                           //I update the color index and then display the color
+    }
     /**
      * Creates and displays welcome screen. This screen will show the rules of the game
      * and will have a "Start game" button so the user can start playing.
      * It will also have an "Exit" button so the user can quit instead
      */
-    public static void createWelcomeScreen() {
+    public void createWelcomeScreen() {
         Stage stage = new Stage();
         stage.setTitle("Welcome");
         AnchorPane welcomeScreen = new AnchorPane();
@@ -55,6 +66,8 @@ public class GUI {
             @Override
             public void handle(ActionEvent event) {
                 stage.close();
+                createGameScreen();
+
             }
         });
         Button quit = new Button("Quit");
@@ -75,7 +88,92 @@ public class GUI {
         stage.setScene(scene);
         stage.show();
     }
-    public static void createGameScreen() {
 
+    /**
+     * Creates and displays game screen
+     */
+    public void createGameScreen() {
+        Stage stage = new Stage();
+        stage.setTitle("Mastermind");
+        AnchorPane gameScreen = new AnchorPane();
+        Scene scene = new Scene(gameScreen, 800, 600);
+
+        /*
+        This part of the code creates the circles which the player will use to select their guess
+         */
+        HBox options = new HBox();
+        options.setSpacing(30.0);
+        Circle c1 = new Circle(20.0);
+        c1.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                changeColor(c1, 0); //0 denotes that the first circle's color should be changed
+            }
+        });
+        Circle c2 = new Circle(20.0);
+        c2.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                changeColor(c2, 1);
+            }
+        });
+        Circle c3 = new Circle(20.0);
+        c3.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                changeColor(c3, 2);
+            }
+        });
+        Circle c4 = new Circle(20.0);
+        c4.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                changeColor(c4, 3);
+            }
+        });
+        options.getChildren().addAll(c1, c2, c3, c4);
+        setTopAnchor(options, 30.0);
+        setLeftAnchor(options, 250.0);
+
+
+
+        gameScreen.getChildren().add(options);
+        stage.setScene(scene);
+        stage.show();
+
+    }
+
+    /**
+     * This function is responsible for the different colors that the guess circles can have
+     * @param c Circle whose color needs to be changed
+     * @param index denotes which color the circle currently has
+     */
+    public void changeColor(Circle c, int index) {
+        if (nums[index]==5) { //there are only 6 color options
+            nums[index]=0;
+        }
+        else {
+            nums[index]++;
+        }
+        switch (nums[index]) {
+            case 0: {
+                c.setFill(Color.BLUE); break;
+            }
+            case 1: {
+                c.setFill(Color.GREEN); break;
+            }
+            case 2: {
+                c.setFill(Color.ORANGE); break;
+            }
+            case 3: {
+                c.setFill(Color.PURPLE); break;
+            }
+            case 4: {
+                c.setFill(Color.RED); break;
+            }
+            case 5: {
+                c.setFill(Color.YELLOW); break;
+            }
+        }
     }
 }

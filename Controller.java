@@ -8,7 +8,9 @@ public class Controller {
 
         @Override
         public void start(Stage primaryStage) throws Exception{
-            GUI.createWelcomeScreen();
+            Game game = new Game();
+            GUI gui = new GUI();
+            gui.createWelcomeScreen();
         }
 
 
