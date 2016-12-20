@@ -108,28 +108,28 @@ public class GUI {
         c1.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                changeColor(c1, 0); //0 denotes that the first circle's color should be changed
+                toggleColor(c1, 0); //0 denotes that the first circle's color should be changed
             }
         });
         Circle c2 = new Circle(20.0);
         c2.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                changeColor(c2, 1);
+                toggleColor(c2, 1);
             }
         });
         Circle c3 = new Circle(20.0);
         c3.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                changeColor(c3, 2);
+                toggleColor(c3, 2);
             }
         });
         Circle c4 = new Circle(20.0);
         c4.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                changeColor(c4, 3);
+                toggleColor(c4, 3);
             }
         });
         options.getChildren().addAll(c1, c2, c3, c4);
@@ -179,13 +179,17 @@ public class GUI {
      *              to order in GameConfiguration.colors array
      *              i.e. 0-Blue, 1-Green, 2-Orange, 3-Purple, 4-Red, 5-Yellow
      */
-    public void changeColor(Circle c, int index) {
+    public void toggleColor(Circle c, int index) {
         if (nums[index]==5) { //there are only 6 color options
             nums[index]=0;
         }
         else {
             nums[index]++;
         }
+        changeColor(c, index);
+    }
+
+    public void changeColor(Circle c, int index)  {
         switch (nums[index]) {
             case 0: {
                 c.setFill(Color.BLUE); break;
@@ -212,9 +216,13 @@ public class GUI {
         HBox guess = new HBox();
         guess.setSpacing(30.0);
         Circle c1 = new Circle(20.0);
+        changeColor(c1, 0);
         Circle c2 = new Circle(20.0);
+        changeColor(c2, 1);
         Circle c3 = new Circle(20.0);
+        changeColor(c3, 2);
         Circle c4 = new Circle(20.0);
+        changeColor(c4, 3);
         guess.getChildren().addAll(c1, c2, c3, c4);
         setLeftAnchor(guess, 250.0);
         guessNum--; //I want the first guess to be at the bottom of the page
