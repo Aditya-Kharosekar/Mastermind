@@ -15,16 +15,17 @@ import javafx.stage.Stage;
 import static javafx.scene.layout.AnchorPane.setLeftAnchor;
 import static javafx.scene.layout.AnchorPane.setTopAnchor;
 
-/**
- * Created by Aditya Kharosekar on 12/18/2016.
- */
 public class GUI {
 
     public int[] nums;
+    HBox[] guesses;
+    int guessNum; //required to set location for corresponding guess circles
 
     GUI() {
         nums = new int[] {-1, -1, -1, -1}; //These have to be -1 because in my changeColor function,
                                            //I update the color index and then display the color
+        guesses = new HBox[10];
+        guessNum = 13; //this is 13 only because it worked well with the spacing
     }
     /**
      * Creates and displays welcome screen. This screen will show the rules of the game
@@ -96,7 +97,7 @@ public class GUI {
         Stage stage = new Stage();
         stage.setTitle("Mastermind");
         AnchorPane gameScreen = new AnchorPane();
-        Scene scene = new Scene(gameScreen, 800, 600);
+        Scene scene = new Scene(gameScreen, 800, 650);
 
         /*
         This part of the code creates the circles which the player will use to select their guess
@@ -136,6 +137,34 @@ public class GUI {
         setLeftAnchor(options, 250.0);
 
 
+        Button submit = new Button("Submit Guess");
+        submit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                if (guessNum>3) { //this will ensure that player only has 10 guesses
+                                  /*
+                                  This is an ugly way to do this. I will work on this later
+                                   */
+                    createGuessCircles(gameScreen);
+                }
+                else {
+                    Stage stage1 = new Stage();
+                    stage1.setTitle("Sorry! You've lost");
+                    AnchorPane anchorPane = new AnchorPane();
+                    Scene scene = new Scene(anchorPane, 300, 100);
+                    Label label = new Label();
+                    label.setText("Sorry! You're out of guesses\nYou lose"); /*Need to make this prettier */
+                    anchorPane.getChildren().add(label);
+                    stage1.setScene(scene);
+                    stage1.show();
+                }
+            }
+        });
+        submit.setPrefHeight(50.0);
+        submit.setPrefWidth(120.0);
+        setTopAnchor(submit, 25.0);
+        setLeftAnchor(submit, 560.0);
+        gameScreen.getChildren().add(submit);
 
         gameScreen.getChildren().add(options);
         stage.setScene(scene);
@@ -146,7 +175,9 @@ public class GUI {
     /**
      * This function is responsible for the different colors that the guess circles can have
      * @param c Circle whose color needs to be changed
-     * @param index denotes which color the circle currently has
+     * @param index denotes which color the circle currently has. Order of colors corresponds
+     *              to order in GameConfiguration.colors array
+     *              i.e. 0-Blue, 1-Green, 2-Orange, 3-Purple, 4-Red, 5-Yellow
      */
     public void changeColor(Circle c, int index) {
         if (nums[index]==5) { //there are only 6 color options
@@ -175,5 +206,22 @@ public class GUI {
                 c.setFill(Color.YELLOW); break;
             }
         }
+    }
+
+    public void createGuessCircles(AnchorPane a) {
+        HBox guess = new HBox();
+        guess.setSpacing(30.0);
+        Circle c1 = new Circle(20.0);
+        Circle c2 = new Circle(20.0);
+        Circle c3 = new Circle(20.0);
+        Circle c4 = new Circle(20.0);
+        guess.getChildren().addAll(c1, c2, c3, c4);
+        setLeftAnchor(guess, 250.0);
+        guessNum--; //I want the first guess to be at the bottom of the page
+                    //and later guesses to move upwards
+        setTopAnchor(guess, guessNum * 50.0);
+
+        a.getChildren().add(guess);
+
     }
 }

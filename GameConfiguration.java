@@ -1,8 +1,6 @@
 package mastermind;
 
-/**
- * Created by Aditya Kharosekar on 12/18/2016.
- */
+
 public class GameConfiguration {
 
     public static final int numOfGuesses = 10;

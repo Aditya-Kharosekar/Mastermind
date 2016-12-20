@@ -2,9 +2,6 @@ package mastermind;
 
 import java.util.Random;
 
-/**
- * Created by Aditya Kharosekar on 12/18/2016.
- */
 public class Game {
 
     public String generateSecretCode() {
