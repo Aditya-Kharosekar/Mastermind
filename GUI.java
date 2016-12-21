@@ -2,14 +2,17 @@ package mastermind;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import static javafx.scene.layout.AnchorPane.setLeftAnchor;
@@ -20,12 +23,18 @@ public class GUI {
     public int[] nums;
     HBox[] guesses;
     int guessNum; //required to set location for corresponding guess circles
+    Game game;
+    int[] code;
+    String c;
 
     GUI() {
         nums = new int[] {-1, -1, -1, -1}; //These have to be -1 because in my changeColor function,
                                            //I update the color index and then display the color
         guesses = new HBox[10];
         guessNum = 13; //this is 13 only because it worked well with the spacing
+        game = new Game();
+        c = game.generateSecretCode();
+        code = game.codeToInts(c);
     }
     /**
      * Creates and displays welcome screen. This screen will show the rules of the game
@@ -173,7 +182,8 @@ public class GUI {
     }
 
     /**
-     * This function is responsible for the different colors that the guess circles can have
+     * This function is responsible for the different colors that the guess circles can have.
+     * Calls changeColor within which is the function actually responsible for assigning colors to circles
      * @param c Circle whose color needs to be changed
      * @param index denotes which color the circle currently has. Order of colors corresponds
      *              to order in GameConfiguration.colors array
@@ -189,6 +199,13 @@ public class GUI {
         changeColor(c, index);
     }
 
+    /**
+     * Assigns colors to each circle
+     * @param c Circle whose color needs to be changed
+     * @param index denotes which color the circle currently has. Order of colors corresponds
+     *              to order in GameConfiguration.colors array
+     *              i.e. 0-Blue, 1-Green, 2-Orange, 3-Purple, 4-Red, 5-Yellow
+     */
     public void changeColor(Circle c, int index)  {
         switch (nums[index]) {
             case 0: {
@@ -213,6 +230,11 @@ public class GUI {
     }
 
     public void createGuessCircles(AnchorPane a) {
+        System.out.println("Code is " + c);
+        for (int i=0; i<4; i++) {
+            System.out.print(code[i]);
+        }
+        System.out.println();
         HBox guess = new HBox();
         guess.setSpacing(30.0);
         Circle c1 = new Circle(20.0);
@@ -223,7 +245,18 @@ public class GUI {
         changeColor(c3, 2);
         Circle c4 = new Circle(20.0);
         changeColor(c4, 3);
-        guess.getChildren().addAll(c1, c2, c3, c4);
+
+        Separator s = new Separator();
+        s.setOrientation(Orientation.VERTICAL);
+        for (int i=0; i<4; i++) {
+            System.out.print(nums[i]);
+        }
+
+        Rectangle r1 = new Rectangle(30.0, 30.0);
+        Rectangle r2 = new Rectangle(30.0, 30.0);
+        Rectangle r3 = new Rectangle(30.0, 30.0);
+        Rectangle r4 = new Rectangle(30.0, 30.0);
+        guess.getChildren().addAll(c1, c2, c3, c4, s, r1, r2, r3, r4);
         setLeftAnchor(guess, 250.0);
         guessNum--; //I want the first guess to be at the bottom of the page
                     //and later guesses to move upwards
