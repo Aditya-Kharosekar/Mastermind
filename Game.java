@@ -45,4 +45,60 @@ public class Game {
         }
         return codeInInts;
     }
+
+    public int[] getFeedback(int[] code, int[] nums) {
+
+        int[] tempCode = new int[4];
+        int[] tempNums = new int[4];
+        for (int i=0; i < 4; i++) {
+            tempCode[i] = code[i];
+            tempNums[i] = nums[i];
+        }
+        int blackPegs = 0;
+        for (int i=0; i < code.length; i++) {
+            if (tempCode[i]==tempNums[i]) {
+                blackPegs++;
+                tempCode[i]=-1;
+                tempNums[i]=-1;
+            }
+        }
+
+        int whitePegs = 0;
+        for (int i=0; i < code.length; i++) {
+            if (tempCode[i]==-1) {
+                continue;
+            }
+            for (int j=0;j < code.length; j++) {
+                if (tempNums[j]==-1) {
+                    continue;
+                }
+                if (tempCode[i]==tempNums[j]) {
+                    whitePegs++;
+                    tempCode[i]=-1;
+                    tempNums[j]=-1;
+                }
+            }
+        }
+        int[] result = new int[2];
+        result[0] = blackPegs;
+        result[1] = whitePegs;
+
+        return result;
+    }
+
+    public int[] feedbackToColors(int[] feedback) {
+        int[] result = new int[4];
+        int numBlack = feedback[0];
+        int numWhite = feedback[1];
+        for (int i=0; i < 4; i++) {
+            if (i < numBlack) {
+                result[i] = 0;
+            }
+            else {
+                result[i] = 1;
+            }
+        }
+
+        return result;
+    }
 }

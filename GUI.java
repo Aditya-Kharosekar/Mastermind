@@ -13,6 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.stage.Stage;
 
 import static javafx.scene.layout.AnchorPane.setLeftAnchor;
@@ -166,6 +167,10 @@ public class GUI {
                     anchorPane.getChildren().add(label);
                     stage1.setScene(scene);
                     stage1.show();
+
+                    for (int i=0; i < 4; i++) {
+                        System.out.print(code[i]);
+                    }
                 }
             }
         });
@@ -206,7 +211,7 @@ public class GUI {
      *              to order in GameConfiguration.colors array
      *              i.e. 0-Blue, 1-Green, 2-Orange, 3-Purple, 4-Red, 5-Yellow
      */
-    public void changeColor(Circle c, int index)  {
+    public void changeColor(Shape c, int index)  {
         switch (nums[index]) {
             case 0: {
                 c.setFill(Color.BLUE); break;
@@ -230,11 +235,6 @@ public class GUI {
     }
 
     public void createGuessCircles(AnchorPane a) {
-        System.out.println("Code is " + c);
-        for (int i=0; i<4; i++) {
-            System.out.print(code[i]);
-        }
-        System.out.println();
         HBox guess = new HBox();
         guess.setSpacing(30.0);
         Circle c1 = new Circle(20.0);
@@ -248,15 +248,37 @@ public class GUI {
 
         Separator s = new Separator();
         s.setOrientation(Orientation.VERTICAL);
-        for (int i=0; i<4; i++) {
-            System.out.print(nums[i]);
+
+        guess.getChildren().addAll(c1, c2, c3, c4, s);
+
+        int[] feedback = game.getFeedback(code, nums);
+
+        if (feedback[0]==4) {
+            System.out.println("You win");
+        }
+        for (int i=0; i < 4; i++) {
+            Rectangle r = new Rectangle(30.0, 30.0);
+            guess.getChildren().add(r);
+            if (feedback[0] > 0) {
+                r.setFill(Color.BLACK);
+                feedback[0]--;
+                continue;
+            }
+            else if (feedback[1] > 0) {
+                r.setFill(Color.WHITE);
+                feedback[1]--;
+                continue;
+            }
+            else {
+                r.setFill(Color.PINK);
+            }
         }
 
-        Rectangle r1 = new Rectangle(30.0, 30.0);
-        Rectangle r2 = new Rectangle(30.0, 30.0);
-        Rectangle r3 = new Rectangle(30.0, 30.0);
-        Rectangle r4 = new Rectangle(30.0, 30.0);
-        guess.getChildren().addAll(c1, c2, c3, c4, s, r1, r2, r3, r4);
+//        Rectangle r1 = new Rectangle(30.0, 30.0);
+//        Rectangle r2 = new Rectangle(30.0, 30.0);
+//        Rectangle r3 = new Rectangle(30.0, 30.0);
+//        Rectangle r4 = new Rectangle(30.0, 30.0);
+//        guess.getChildren().addAll(c1, c2, c3, c4, s, r1, r2, r3, r4);
         setLeftAnchor(guess, 250.0);
         guessNum--; //I want the first guess to be at the bottom of the page
                     //and later guesses to move upwards
