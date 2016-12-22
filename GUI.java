@@ -23,7 +23,8 @@ public class GUI {
 
     public int[] nums;
     HBox[] guesses;
-    int guessNum; //required to set location for corresponding guess circles
+    int index; //required to set location for corresponding guess circles
+    int guessNum;
     Game game;
     int[] code;
     String c;
@@ -32,10 +33,11 @@ public class GUI {
         nums = new int[] {-1, -1, -1, -1}; //These have to be -1 because in my changeColor function,
                                            //I update the color index and then display the color
         guesses = new HBox[10];
-        guessNum = 13; //this is 13 only because it worked well with the spacing
+        index = 13; //this is 13 only because it worked well with the spacing
         game = new Game();
         c = game.generateSecretCode();
         code = game.codeToInts(c);
+        guessNum = 1;
     }
     /**
      * Creates and displays welcome screen. This screen will show the rules of the game
@@ -107,7 +109,7 @@ public class GUI {
         Stage stage = new Stage();
         stage.setTitle("Mastermind");
         AnchorPane gameScreen = new AnchorPane();
-        Scene scene = new Scene(gameScreen, 800, 650);
+        Scene scene = new Scene(gameScreen, 1000, 650);
 
         /*
         This part of the code creates the circles which the player will use to select their guess
@@ -144,29 +146,21 @@ public class GUI {
         });
         options.getChildren().addAll(c1, c2, c3, c4);
         setTopAnchor(options, 30.0);
-        setLeftAnchor(options, 250.0);
+        setLeftAnchor(options, 270.0);
 
 
         Button submit = new Button("Submit Guess");
         submit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                if (guessNum>3) { //this will ensure that player only has 10 guesses
+                if (index>3) { //this will ensure that player only has 10 guesses
                                   /*
                                   This is an ugly way to do this. I will work on this later
                                    */
-                    createGuessCircles(gameScreen);
+                    createGuessCircles(gameScreen, stage);
                 }
                 else {
-                    Stage stage1 = new Stage();
-                    stage1.setTitle("Sorry! You've lost");
-                    AnchorPane anchorPane = new AnchorPane();
-                    Scene scene = new Scene(anchorPane, 300, 100);
-                    Label label = new Label();
-                    label.setText("Sorry! You're out of guesses\nYou lose"); /*Need to make this prettier */
-                    anchorPane.getChildren().add(label);
-                    stage1.setScene(scene);
-                    stage1.show();
+                    playAgainScreen(false, stage);
 
                     for (int i=0; i < 4; i++) {
                         System.out.print(code[i]);
@@ -234,9 +228,12 @@ public class GUI {
         }
     }
 
-    public void createGuessCircles(AnchorPane a) {
+    public void createGuessCircles(AnchorPane a, Stage stage) {
         HBox guess = new HBox();
         guess.setSpacing(30.0);
+        Label whichGuess = new Label();
+        whichGuess.setText("" + guessNum);
+        guessNum++;
         Circle c1 = new Circle(20.0);
         changeColor(c1, 0);
         Circle c2 = new Circle(20.0);
@@ -249,12 +246,12 @@ public class GUI {
         Separator s = new Separator();
         s.setOrientation(Orientation.VERTICAL);
 
-        guess.getChildren().addAll(c1, c2, c3, c4, s);
+        guess.getChildren().addAll(whichGuess, c1, c2, c3, c4, s);
 
         int[] feedback = game.getFeedback(code, nums);
 
         if (feedback[0]==4) {
-            System.out.println("You win");
+            playAgainScreen(true, stage);
         }
         for (int i=0; i < 4; i++) {
             Rectangle r = new Rectangle(30.0, 30.0);
@@ -262,29 +259,76 @@ public class GUI {
             if (feedback[0] > 0) {
                 r.setFill(Color.BLACK);
                 feedback[0]--;
-                continue;
             }
             else if (feedback[1] > 0) {
                 r.setFill(Color.WHITE);
                 feedback[1]--;
-                continue;
             }
             else {
                 r.setFill(Color.PINK);
             }
         }
 
-//        Rectangle r1 = new Rectangle(30.0, 30.0);
-//        Rectangle r2 = new Rectangle(30.0, 30.0);
-//        Rectangle r3 = new Rectangle(30.0, 30.0);
-//        Rectangle r4 = new Rectangle(30.0, 30.0);
-//        guess.getChildren().addAll(c1, c2, c3, c4, s, r1, r2, r3, r4);
-        setLeftAnchor(guess, 250.0);
-        guessNum--; //I want the first guess to be at the bottom of the page
+        if (guessNum!=11) {
+            setLeftAnchor(guess, 220.0);
+        }
+        else {
+            setLeftAnchor(guess, 214.0);
+        }
+        index--; //I want the first guess to be at the bottom of the page
                     //and later guesses to move upwards
-        setTopAnchor(guess, guessNum * 50.0);
+        setTopAnchor(guess, index * 50.0);
 
         a.getChildren().add(guess);
 
+    }
+
+    public void playAgainScreen(boolean won, Stage s) {
+        Stage stage = new Stage();
+        AnchorPane playAgain = new AnchorPane();
+        Scene scene = new Scene(playAgain, 300, 100);
+
+        Label message = new Label();
+        setTopAnchor(message, 10.0);
+        setLeftAnchor(message, 105.0);
+        if (won) {
+            stage.setTitle("You Win!");
+            message.setText("Congrats! You Win!");
+        }
+        else {
+            stage.setTitle("You Lose!");
+            message.setText("Sorry! You lose!");
+        }
+        Button play = new Button("Play Again");
+        setTopAnchor(play, 60.0);
+        setLeftAnchor(play, 40.0);
+        play.setPrefHeight(15.0);
+        play.setPrefWidth(80.0);
+        play.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                s.close();
+                stage.close();
+                (new GUI()).createGameScreen();
+            }
+        });
+        Button quit = new Button("Quit");
+        setTopAnchor(quit, 60.0);
+        setLeftAnchor(quit, 180.0);
+        quit.setPrefHeight(15.0);
+        quit.setPrefWidth(80.0);
+        quit.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent event) {
+                System.exit(0);
+            }
+        });
+        playAgain.getChildren().addAll(message, play, quit);
+
+
+        stage.setScene(scene);
+        stage.show();
     }
 }

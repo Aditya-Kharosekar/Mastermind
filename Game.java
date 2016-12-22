@@ -86,19 +86,4 @@ public class Game {
         return result;
     }
 
-    public int[] feedbackToColors(int[] feedback) {
-        int[] result = new int[4];
-        int numBlack = feedback[0];
-        int numWhite = feedback[1];
-        for (int i=0; i < 4; i++) {
-            if (i < numBlack) {
-                result[i] = 0;
-            }
-            else {
-                result[i] = 1;
-            }
-        }
-
-        return result;
-    }
 }
