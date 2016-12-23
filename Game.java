@@ -4,15 +4,17 @@ import java.util.Random;
 
 public class Game {
 
+    public static final String[] colors = {"B", "G", "O", "P", "R", "Y"};
+
     public String generateSecretCode() {
         Random generator = new Random();
         String result="";
-        int index, numberOfPegs=GameConfiguration.pegNumber;
-        String[] colors=GameConfiguration.colors;
+        int index, numberOfPegs=4;
+        String[] c=colors;
         for(int i=0; i<numberOfPegs; i++)
         {
-            index=generator.nextInt(colors.length);
-            result+=colors[index];
+            index=generator.nextInt(c.length);
+            result+=c[index];
         }
         return result;
     }

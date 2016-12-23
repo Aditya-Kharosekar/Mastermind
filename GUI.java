@@ -21,22 +21,18 @@ import static javafx.scene.layout.AnchorPane.setTopAnchor;
 
 public class GUI {
 
-    public int[] nums;
-    HBox[] guesses;
-    int index; //required to set location for corresponding guess circles
-    int guessNum;
+    public int[] nums;//the corresponding indeces of the colors chosen
+    int index;      //required to set vertical location for corresponding guess circles
+    int guessNum;   //this is to display the number of the current guess
     Game game;
-    int[] code;
-    String c;
+    int[] code;     //to store the secret code in integer form (i.e. converting colors to their indeces)
 
     GUI() {
         nums = new int[] {-1, -1, -1, -1}; //These have to be -1 because in my changeColor function,
                                            //I update the color index and then display the color
-        guesses = new HBox[10];
         index = 13; //this is 13 only because it worked well with the spacing
         game = new Game();
-        c = game.generateSecretCode();
-        code = game.codeToInts(c);
+        code = game.codeToInts(game.generateSecretCode());
         guessNum = 1;
     }
     /**
@@ -70,6 +66,7 @@ public class GUI {
                 "Are you ready?");
         welcomeScreen.getChildren().add(rules);
 
+        /*Buttons */
         Button play = new Button("Start Game");
         setTopAnchor(play, 420.0);
         setLeftAnchor(play, 80.0);
@@ -95,7 +92,6 @@ public class GUI {
                 System.exit(0);
             }
         });
-
         welcomeScreen.getChildren().addAll(play,quit);
 
         stage.setScene(scene);
@@ -116,65 +112,66 @@ public class GUI {
          */
         HBox options = new HBox();
         options.setSpacing(30.0);
-        Circle c1 = new Circle(20.0);
-        c1.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                toggleColor(c1, 0); //0 denotes that the first circle's color should be changed
-            }
-        });
-        Circle c2 = new Circle(20.0);
-        c2.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                toggleColor(c2, 1);
-            }
-        });
-        Circle c3 = new Circle(20.0);
-        c3.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                toggleColor(c3, 2);
-            }
-        });
-        Circle c4 = new Circle(20.0);
-        c4.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                toggleColor(c4, 3);
-            }
-        });
-        options.getChildren().addAll(c1, c2, c3, c4);
+
+        for (int i=0; i < 4; i++) {
+            int x = i; //just a dummy variable. I cannot use i because if I access it
+                       //from within inner class, i needs to be final or effectively final.
+                       //this is an adequate workaround
+            Circle c = new Circle(20.0);
+            options.getChildren().add(c);
+            c.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    toggleColor(c, x);
+                }
+            });
+        }
         setTopAnchor(options, 30.0);
         setLeftAnchor(options, 270.0);
 
-
+        /*
+        This part of the code creates the "Submit Guess" and "Exit" buttons
+         */
         Button submit = new Button("Submit Guess");
         submit.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 if (index>3) { //this will ensure that player only has 10 guesses
                                   /*
-                                  This is an ugly way to do this. I will work on this later
+                                  This is an ugly way to do this. I might work on this later
                                    */
                     createGuessCircles(gameScreen, stage);
                 }
                 else {
                     playAgainScreen(false, stage);
-
+                    /*
+                    For debugging purposes. Will replace this with playAgainScreen displaying code
+                     */
                     for (int i=0; i < 4; i++) {
                         System.out.print(code[i]);
                     }
                 }
+
             }
         });
         submit.setPrefHeight(50.0);
         submit.setPrefWidth(120.0);
         setTopAnchor(submit, 25.0);
         setLeftAnchor(submit, 560.0);
-        gameScreen.getChildren().add(submit);
 
-        gameScreen.getChildren().add(options);
+        Button exit = new Button("Exit");
+        exit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                System.exit(0);
+            }
+        });
+        exit.setPrefHeight(50.0);
+        exit.setPrefWidth(120.0);
+        setTopAnchor(exit, 25.0);
+        setLeftAnchor(exit, 780.0);
+
+        gameScreen.getChildren().addAll(options, submit, exit);
         stage.setScene(scene);
         stage.show();
 
@@ -185,7 +182,7 @@ public class GUI {
      * Calls changeColor within which is the function actually responsible for assigning colors to circles
      * @param c Circle whose color needs to be changed
      * @param index denotes which color the circle currently has. Order of colors corresponds
-     *              to order in GameConfiguration.colors array
+     *              to order in colors[] array
      *              i.e. 0-Blue, 1-Green, 2-Orange, 3-Purple, 4-Red, 5-Yellow
      */
     public void toggleColor(Circle c, int index) {
@@ -200,9 +197,9 @@ public class GUI {
 
     /**
      * Assigns colors to each circle
-     * @param c Circle whose color needs to be changed
-     * @param index denotes which color the circle currently has. Order of colors corresponds
-     *              to order in GameConfiguration.colors array
+     * @param c shape object whose color needs to be changed
+     * @param index denotes which color the shape currently has. Order of colors corresponds
+     *              to order in colors[] array
      *              i.e. 0-Blue, 1-Green, 2-Orange, 3-Purple, 4-Red, 5-Yellow
      */
     public void changeColor(Shape c, int index)  {
@@ -228,6 +225,12 @@ public class GUI {
         }
     }
 
+    /**
+     * Creates row of circles and feedback squares for each quess
+     * @param a the AnchorPane created in createGameScreen to which I need to add the guess circles and squares
+     * @param stage the stage created in createGameScreen. This is required only to pass
+     *              to playAgainScreen() as that may need to close the game screen stage
+     */
     public void createGuessCircles(AnchorPane a, Stage stage) {
         HBox guess = new HBox();
         guess.setSpacing(30.0);
@@ -250,7 +253,7 @@ public class GUI {
 
         int[] feedback = game.getFeedback(code, nums);
 
-        if (feedback[0]==4) {
+        if (feedback[0]==4) { //if player has won
             playAgainScreen(true, stage);
         }
         for (int i=0; i < 4; i++) {
