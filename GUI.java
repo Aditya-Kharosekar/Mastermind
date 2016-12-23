@@ -143,7 +143,7 @@ public class GUI {
                     createGuessCircles(gameScreen, stage);
                 }
                 else {
-                    playAgainScreen(false, stage);
+                    playAgainScreen(false, stage); //first argument is false means that player has lost the game
                     /*
                     For debugging purposes. Will replace this with playAgainScreen displaying code
                      */
@@ -226,7 +226,7 @@ public class GUI {
     }
 
     /**
-     * Creates row of circles and feedback squares for each quess
+     * Creates row of circles and feedback squares for each guess
      * @param a the AnchorPane created in createGameScreen to which I need to add the guess circles and squares
      * @param stage the stage created in createGameScreen. This is required only to pass
      *              to playAgainScreen() as that may need to close the game screen stage
@@ -237,33 +237,35 @@ public class GUI {
         Label whichGuess = new Label();
         whichGuess.setText("" + guessNum);
         guessNum++;
-        Circle c1 = new Circle(20.0);
-        changeColor(c1, 0);
-        Circle c2 = new Circle(20.0);
-        changeColor(c2, 1);
-        Circle c3 = new Circle(20.0);
-        changeColor(c3, 2);
-        Circle c4 = new Circle(20.0);
-        changeColor(c4, 3);
+        guess.getChildren().add(whichGuess);
+
+        for (int i=0; i<4; i++) {
+            Circle c = new Circle(20.0);
+            changeColor(c, i);
+            guess.getChildren().add(c);
+        }
 
         Separator s = new Separator();
         s.setOrientation(Orientation.VERTICAL);
-
-        guess.getChildren().addAll(whichGuess, c1, c2, c3, c4, s);
+        guess.getChildren().add(s);
 
         int[] feedback = game.getFeedback(code, nums);
+        /*
+        Now, feedback[0] = number of black pegs
+        feedback[1] = number of white pegs
+         */
 
         if (feedback[0]==4) { //if player has won
-            playAgainScreen(true, stage);
+            playAgainScreen(true, stage); //first argument is true means that player has won
         }
         for (int i=0; i < 4; i++) {
             Rectangle r = new Rectangle(30.0, 30.0);
             guess.getChildren().add(r);
-            if (feedback[0] > 0) {
+            if (feedback[0] > 0) {  //first filling in any black feedback pegs
                 r.setFill(Color.BLACK);
                 feedback[0]--;
             }
-            else if (feedback[1] > 0) {
+            else if (feedback[1] > 0) {//then filling in any white feedback pegs
                 r.setFill(Color.WHITE);
                 feedback[1]--;
             }
@@ -272,12 +274,14 @@ public class GUI {
             }
         }
 
-        if (guessNum!=11) {
+        if (guessNum!=11) { //This if-else block is purely for sake of alignment
+                            //The 10th and final guess was not aligning with the previous guesses
             setLeftAnchor(guess, 220.0);
         }
         else {
             setLeftAnchor(guess, 214.0);
         }
+
         index--; //I want the first guess to be at the bottom of the page
                     //and later guesses to move upwards
         setTopAnchor(guess, index * 50.0);
@@ -286,6 +290,12 @@ public class GUI {
 
     }
 
+    /**
+     * Creates the screen after the player either wins or loses the game.
+     * If player has lost the game, screen will display what the code was for that game
+     * @param won true if player has won. false if player has lost. Useful to modify text, title, etc.. to situation
+     * @param s if player chooses to play again, I want to close the current gameScreen. Need this stage for that
+     */
     public void playAgainScreen(boolean won, Stage s) {
         Stage stage = new Stage();
         AnchorPane playAgain = new AnchorPane();
@@ -308,7 +318,6 @@ public class GUI {
         play.setPrefHeight(15.0);
         play.setPrefWidth(80.0);
         play.setOnAction(new EventHandler<ActionEvent>() {
-
             @Override
             public void handle(ActionEvent event) {
                 s.close();
@@ -316,20 +325,20 @@ public class GUI {
                 (new GUI()).createGameScreen();
             }
         });
+
         Button quit = new Button("Quit");
         setTopAnchor(quit, 60.0);
         setLeftAnchor(quit, 180.0);
         quit.setPrefHeight(15.0);
         quit.setPrefWidth(80.0);
         quit.setOnAction(new EventHandler<ActionEvent>() {
-
             @Override
             public void handle(ActionEvent event) {
                 System.exit(0);
             }
         });
-        playAgain.getChildren().addAll(message, play, quit);
 
+        playAgain.getChildren().addAll(message, play, quit);
 
         stage.setScene(scene);
         stage.show();
