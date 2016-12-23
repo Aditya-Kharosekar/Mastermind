@@ -108,4 +108,38 @@ public class Game {
         return result;
     }
 
+    /**
+     * Is called when player loses. This function converts the code in int[] form to string.
+     * In other words, it goes the other way as codeToInts.
+     * @param codeInInts the code in int[] form
+     * @return the secret code as a string
+     */
+    public String codeForPlayAgain(int[] codeInInts) {
+        String result = "";
+        for (int i=0; i < 4; i++) {
+            switch(codeInInts[i]) {
+                case 0: {
+                    result = result + "Blue, "; break;
+                }
+                case 1: {
+                    result = result + "Green, "; break;
+                }
+                case 2: {
+                    result = result + "Orange, "; break;
+                }
+                case 3: {
+                    result = result + "Purple, "; break;
+                }
+                case 4: {
+                    result = result + "Red, "; break;
+                }
+                case 5: {
+                    result = result + "Yellow, "; break;
+                }
+            }
+        }
+        result = result.substring(0, result.length()-2); //to take out the comma at the end
+        result = result + ".";
+        return result;
+    }
 }

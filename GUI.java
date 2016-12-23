@@ -304,13 +304,20 @@ public class GUI {
         Label message = new Label();
         setTopAnchor(message, 10.0);
         setLeftAnchor(message, 105.0);
+        Label showCode = new Label(); //only used if player has lost
+        showCode.setVisible(false);
         if (won) {
             stage.setTitle("You Win!");
             message.setText("Congrats! You Win!");
         }
         else {
             stage.setTitle("You Lose!");
-            message.setText("Sorry! You lose!");
+            message.setText("Sorry! You lose!\n");
+            showCode.setText("The code was " + game.codeForPlayAgain(code));
+            showCode.setVisible(true);
+            setTopAnchor(showCode, 28.0);
+            setLeftAnchor(showCode, 40.0);
+
         }
         Button play = new Button("Play Again");
         setTopAnchor(play, 60.0);
@@ -338,7 +345,7 @@ public class GUI {
             }
         });
 
-        playAgain.getChildren().addAll(message, play, quit);
+        playAgain.getChildren().addAll(message, showCode, play, quit);
 
         stage.setScene(scene);
         stage.show();
